@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef, useEffect } from "react";
-import PageLayout from "../components/PageLayout.jsx";
-import { palette, alpha } from "../style/theme.js";
+import type { CSSProperties } from "react";
+import PageLayout from "../components/PageLayout";
+import { palette, alpha } from "../style/theme";
 
 // Colours sourced from the centralised theme
 const COLORS = {
@@ -20,7 +21,7 @@ const COLORS = {
   red: palette.red,
 };
 
-const FACE_DOTS = {
+const FACE_DOTS: Record<number, [number, number][]> = {
   1: [[1, 1]],
   2: [
     [0, 2],
@@ -54,7 +55,7 @@ const FACE_DOTS = {
   ],
 };
 
-function DiceFace({ value, size = 48 }) {
+function DiceFace({ value, size = 48 }: { value: number; size?: number }) {
   const dots = FACE_DOTS[value] || [];
   const pad = size * 0.2;
   const gap = (size - 2 * pad) / 2;
@@ -84,7 +85,17 @@ function DiceFace({ value, size = 48 }) {
   );
 }
 
-function Bar({ maxHeight, value, count, total, color, glow, highlight }) {
+interface BarProps {
+  maxHeight: number;
+  value: string | number;
+  count: number;
+  total: number;
+  color: string;
+  glow: string;
+  highlight: boolean;
+}
+
+function Bar({ maxHeight, value, count, total, color, glow, highlight }: BarProps) {
   const pct = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
   const barH = maxHeight > 0 ? (count / maxHeight) * 100 : 0;
   return (
@@ -142,7 +153,16 @@ function Bar({ maxHeight, value, count, total, color, glow, highlight }) {
   );
 }
 
-function Histogram({ data, label, color, glow, binLabels, theoretical }) {
+interface HistogramProps {
+  data: Record<string, number>;
+  label: string;
+  color: string;
+  glow: string;
+  binLabels?: Record<string, string>;
+  theoretical?: boolean;
+}
+
+function Histogram({ data, label, color, glow, binLabels, theoretical }: HistogramProps) {
   const maxCount = Math.max(...Object.values(data), 1);
   const total = Object.values(data).reduce((a, b) => a + b, 0);
   const keys = Object.keys(data).sort((a, b) => parseFloat(a) - parseFloat(b));
@@ -219,19 +239,19 @@ function Histogram({ data, label, color, glow, binLabels, theoretical }) {
   );
 }
 
-function gaussianPDF(x, mean, std) {
+function gaussianPDF(x: number, mean: number, std: number): number {
   return (
     (1 / (std * Math.sqrt(2 * Math.PI))) *
     Math.exp(-0.5 * Math.pow((x - mean) / std, 2))
   );
 }
 
-function NormalCurveOverlay({ data, color }) {
+function NormalCurveOverlay({ data, color }: { data: Record<string, number>; color: string }) {
   const keys = Object.keys(data).sort((a, b) => parseFloat(a) - parseFloat(b));
   const total = Object.values(data).reduce((a, b) => a + b, 0);
   if (total < 30) return null;
 
-  const vals = [];
+  const vals: number[] = [];
   for (const k of keys) {
     for (let i = 0; i < data[k]; i++) vals.push(parseFloat(k));
   }
@@ -252,7 +272,7 @@ function NormalCurveOverlay({ data, color }) {
 
   const w = 400;
   const h = 180;
-  const points = [];
+  const points: string[] = [];
   for (let i = 0; i <= 80; i++) {
     const x = minX + (maxX - minX) * (i / 80);
     const pdf = gaussianPDF(x, mean, std);
@@ -288,8 +308,8 @@ function NormalCurveOverlay({ data, color }) {
   );
 }
 
-function StatsRow({ data, color }) {
-  const vals = [];
+function StatsRow({ data, color }: { data: Record<string, number>; color: string }) {
+  const vals: number[] = [];
   for (const [k, v] of Object.entries(data)) {
     for (let i = 0; i < v; i++) vals.push(parseFloat(k));
   }
@@ -327,7 +347,7 @@ function StatsRow({ data, color }) {
 export default function CLT() {
   const [numDice, setNumDice] = useState(2);
   const [speed, setSpeed] = useState(50);
-  const [singleDist, setSingleDist] = useState({
+  const [singleDist, setSingleDist] = useState<Record<string, number>>({
     1: 0,
     2: 0,
     3: 0,
@@ -335,14 +355,14 @@ export default function CLT() {
     5: 0,
     6: 0,
   });
-  const [avgDist, setAvgDist] = useState({});
+  const [avgDist, setAvgDist] = useState<Record<string, number>>({});
   const [rolling, setRolling] = useState(false);
-  const [lastRoll, setLastRoll] = useState([]);
+  const [lastRoll, setLastRoll] = useState<number[]>([]);
   const [totalRolls, setTotalRolls] = useState(0);
-  const intervalRef = useRef(null);
+  const intervalRef = useRef<number | null>(null);
 
-  const buildBins = useCallback((n) => {
-    const bins = {};
+  const buildBins = useCallback((n: number): Record<string, number> => {
+    const bins: Record<string, number> = {};
     const step = n <= 4 ? 0.5 : 0.25;
     for (let v = 1; v <= 6; v = +(v + step).toFixed(2)) {
       bins[v.toFixed(2)] = 0;
@@ -362,7 +382,7 @@ export default function CLT() {
   }, [numDice, buildBins]);
 
   const doOneRoll = useCallback(() => {
-    const dice = [];
+    const dice: number[] = [];
     for (let i = 0; i < numDice; i++) {
       dice.push(Math.floor(Math.random() * 6) + 1);
     }
@@ -399,7 +419,7 @@ export default function CLT() {
 
   const toggleRoll = useCallback(() => {
     if (rolling) {
-      clearInterval(intervalRef.current);
+      clearInterval(intervalRef.current!);
       setRolling(false);
     } else {
       intervalRef.current = setInterval(doOneRoll, Math.max(10, 200 - speed * 2));
@@ -408,7 +428,7 @@ export default function CLT() {
   }, [rolling, doOneRoll, speed]);
 
   const rollBatch = useCallback(
-    (count) => {
+    (count: number) => {
       for (let i = 0; i < count; i++) doOneRoll();
     },
     [doOneRoll]
@@ -431,7 +451,7 @@ export default function CLT() {
     };
   }, []);
 
-  const btnStyle = (active, clr) => ({
+  const btnStyle = (active: boolean, clr: string): CSSProperties => ({
     padding: "10px 20px",
     borderRadius: 10,
     cursor: "pointer",
@@ -515,7 +535,7 @@ export default function CLT() {
               onChange={(e) => {
                 setSpeed(+e.target.value);
                 if (rolling) {
-                  clearInterval(intervalRef.current);
+                  clearInterval(intervalRef.current!);
                   intervalRef.current = setInterval(
                     doOneRoll,
                     Math.max(10, 200 - +e.target.value * 2)

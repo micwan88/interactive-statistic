@@ -1,6 +1,13 @@
 // Registry of interactive demos — drives the landing page cards.
-// Add a new demo here and create its route in App.jsx.
-export const DEMOS = [
+// Add a new demo here and create its route in App.tsx.
+export interface Demo {
+  path: string;
+  emoji: string;
+  title: string;
+  blurb: string;
+}
+
+export const DEMOS: Demo[] = [
   {
     path: "/binomial-normal",
     emoji: "🪙",

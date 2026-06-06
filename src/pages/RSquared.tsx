@@ -11,8 +11,9 @@
  */
 
 import { useState, useMemo } from "react";
-import PageLayout from "../components/PageLayout.jsx";
-import { palette, alpha } from "../style/theme.js";
+import type { ReactNode } from "react";
+import PageLayout from "../components/PageLayout";
+import { palette, alpha } from "../style/theme";
 
 // ---- Data ------------------------------------------------------
 const BASE_X = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -29,9 +30,9 @@ const PLOT_RIGHT = 580;
 const PLOT_TOP = 20;
 const PLOT_BOTTOM = 340;
 
-const xPx = (x) =>
+const xPx = (x: number) =>
   PLOT_LEFT + ((x - X_MIN) / (X_MAX - X_MIN)) * (PLOT_RIGHT - PLOT_LEFT);
-const yPx = (y) =>
+const yPx = (y: number) =>
   PLOT_BOTTOM - ((y - Y_MIN) / (Y_MAX - Y_MIN)) * (PLOT_BOTTOM - PLOT_TOP);
 
 // ---- Colors (dark theme, from centralised tokens) -------------
@@ -53,7 +54,7 @@ const COLORS = {
 };
 
 // ---- Stats -----------------------------------------------------
-function computeData(noiseLevel) {
+function computeData(noiseLevel: number) {
   const x = BASE_X;
   const y = BASE_Y.map((v, i) => v + noiseLevel * NOISE_OFFSETS[i]);
   const n = x.length;
@@ -72,7 +73,15 @@ function computeData(noiseLevel) {
 }
 
 // ---- Subcomponents --------------------------------------------
-function StatCard({ label, value, accent }) {
+function StatCard({
+  label,
+  value,
+  accent,
+}: {
+  label: string;
+  value: string | number;
+  accent?: string;
+}) {
   return (
     <div
       style={{
@@ -99,7 +108,15 @@ function StatCard({ label, value, accent }) {
   );
 }
 
-function ModeButton({ active, onClick, children }) {
+function ModeButton({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: ReactNode;
+}) {
   return (
     <button
       onClick={onClick}
