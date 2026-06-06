@@ -74,6 +74,7 @@ The test: Every changed line should trace directly to the user's request.
 - Vite
 - Tailwind
 - Typescript
+- Npm/node (if necessary. they are on user-level)
 
 ## 5. Project Structure
 
