@@ -1,8 +1,8 @@
 import { Routes, Route } from "react-router-dom";
-import Home from "./pages/Home.jsx";
-import BinomialNormal from "./pages/BinomialNormal.jsx";
-import CLT from "./pages/CLT.jsx";
-import RSquared from "./pages/RSquared.jsx";
+import Home from "./pages/Home";
+import BinomialNormal from "./pages/BinomialNormal";
+import CLT from "./pages/CLT";
+import RSquared from "./pages/RSquared";
 
 export default function App() {
   return (

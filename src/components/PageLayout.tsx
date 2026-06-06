@@ -1,9 +1,22 @@
+import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { palette, fonts } from "../style/theme.js";
+import { palette, fonts } from "../style/theme";
+
+interface PageLayoutProps {
+  title: string;
+  subtitle?: string;
+  maxWidth?: number;
+  children: ReactNode;
+}
 
 // Shared shell so every interactive page has the same background,
 // container width, top navigation and header treatment.
-export default function PageLayout({ title, subtitle, maxWidth = 900, children }) {
+export default function PageLayout({
+  title,
+  subtitle,
+  maxWidth = 900,
+  children,
+}: PageLayoutProps) {
   return (
     <div
       style={{

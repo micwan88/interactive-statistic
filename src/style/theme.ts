@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------
 // Centralised design tokens — single source of truth for the site.
-// Consumed by Tailwind (tailwind.config.js) and by the chart/SVG
+// Consumed by Tailwind (tailwind.config.ts) and by the chart/SVG
 // code that needs raw colour values for inline styles.
 // ---------------------------------------------------------------
 

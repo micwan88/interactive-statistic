@@ -1,6 +1,7 @@
 import { useState, useCallback, useMemo } from "react";
-import PageLayout from "../components/PageLayout.jsx";
-import { palette, alpha } from "../style/theme.js";
+import type { CSSProperties } from "react";
+import PageLayout from "../components/PageLayout";
+import { palette, alpha } from "../style/theme";
 
 // Colours sourced from the centralised theme
 const C = {
@@ -20,7 +21,7 @@ const C = {
   purple: palette.purple,
 };
 
-function comb(n, k) {
+function comb(n: number, k: number): number {
   if (k > n) return 0;
   if (k === 0 || k === n) return 1;
   let result = 1;
@@ -30,20 +31,20 @@ function comb(n, k) {
   return result;
 }
 
-function binomialPMF(n, p, k) {
+function binomialPMF(n: number, p: number, k: number): number {
   return comb(n, k) * Math.pow(p, k) * Math.pow(1 - p, n - k);
 }
 
-function gaussianPDF(x, mu, sigma) {
+function gaussianPDF(x: number, mu: number, sigma: number): number {
   return (
     (1 / (sigma * Math.sqrt(2 * Math.PI))) *
     Math.exp(-0.5 * Math.pow((x - mu) / sigma, 2))
   );
 }
 
-function CoinRow({ n, result }) {
+function CoinRow({ n, result }: { n: number; result: number | null }) {
   const display = result !== null ? result : null;
-  const coins = [];
+  const coins: boolean[] = [];
   if (display !== null && n <= 30) {
     const heads = display;
     const tails = n - display;
@@ -114,12 +115,19 @@ function CoinRow({ n, result }) {
   );
 }
 
-function BinomialChart({ n, p, empirical, totalFlips }) {
+interface BinomialChartProps {
+  n: number;
+  p: number;
+  empirical: Record<number, number>;
+  totalFlips: number;
+}
+
+function BinomialChart({ n, p, empirical, totalFlips }: BinomialChartProps) {
   const mu = n * p;
   const sigma = Math.sqrt(n * p * (1 - p));
 
   const theoreticalData = useMemo(() => {
-    const data = [];
+    const data: { k: number; prob: number }[] = [];
     for (let k = 0; k <= n; k++) {
       data.push({ k, prob: binomialPMF(n, p, k) });
     }
@@ -144,7 +152,7 @@ function BinomialChart({ n, p, empirical, totalFlips }) {
 
   const normalPoints = useMemo(() => {
     if (sigma === 0) return "";
-    const pts = [];
+    const pts: string[] = [];
     for (let i = 0; i <= 200; i++) {
       const x = (i / 200) * n;
       const pdf = gaussianPDF(x, mu, sigma);
@@ -374,9 +382,9 @@ function BinomialChart({ n, p, empirical, totalFlips }) {
 export default function BinomialNormal() {
   const [n, setN] = useState(10);
   const [p, setP] = useState(0.5);
-  const [empirical, setEmpirical] = useState({});
+  const [empirical, setEmpirical] = useState<Record<number, number>>({});
   const [totalFlips, setTotalFlips] = useState(0);
-  const [lastResult, setLastResult] = useState(null);
+  const [lastResult, setLastResult] = useState<number | null>(null);
 
   const reset = useCallback(() => {
     setEmpirical({});
@@ -387,7 +395,7 @@ export default function BinomialNormal() {
   const doFlip = useCallback(
     (times = 1) => {
       const newEmp = { ...empirical };
-      let last = null;
+      let last: number | null = null;
       for (let t = 0; t < times; t++) {
         let heads = 0;
         for (let i = 0; i < n; i++) {
@@ -403,14 +411,14 @@ export default function BinomialNormal() {
     [n, p, empirical]
   );
 
-  const handleNChange = useCallback((newN) => {
+  const handleNChange = useCallback((newN: number) => {
     setN(newN);
     setEmpirical({});
     setTotalFlips(0);
     setLastResult(null);
   }, []);
 
-  const handlePChange = useCallback((newP) => {
+  const handlePChange = useCallback((newP: number) => {
     setP(newP);
     setEmpirical({});
     setTotalFlips(0);
@@ -420,7 +428,7 @@ export default function BinomialNormal() {
   const mu = n * p;
   const sigma = Math.sqrt(n * p * (1 - p));
 
-  const btnStyle = (active, clr) => ({
+  const btnStyle = (active: boolean, clr: string): CSSProperties => ({
     padding: "8px 16px",
     borderRadius: 10,
     cursor: "pointer",

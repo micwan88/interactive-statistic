@@ -1,11 +1,11 @@
-import { palette, fonts } from "./src/style/theme.js";
+import type { Config } from "tailwindcss";
+import { palette, fonts } from "./src/style/theme";
 
-/** @type {import('tailwindcss').Config} */
 export default {
   content: ["./index.html", "./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
-      // Centralised design tokens — see src/style/theme.js
+      // Centralised design tokens — see src/style/theme.ts
       colors: palette,
       fontFamily: {
         sans: fonts.sans,
@@ -15,4 +15,4 @@ export default {
     },
   },
   plugins: [],
-};
+} satisfies Config;

@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
-import { palette, fonts } from "../style/theme.js";
-import { DEMOS } from "../demos.js";
+import { palette, fonts } from "../style/theme";
+import { DEMOS, type Demo } from "../demos";
 
-function DemoCard({ demo }) {
+function DemoCard({ demo }: { demo: Demo }) {
   return (
     <Link
       to={demo.path}
